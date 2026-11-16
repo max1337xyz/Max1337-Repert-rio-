@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>max1337xyz — portfólio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=VT323&display=swap" rel="stylesheet">
+<style>
+/* ===== Tokens (terminal é sempre escuro) ===== */
+:root{
+  --bg:#0a0a0a; --panel:#0d1117; --fg:#00ff41; --dim:#3d6b45; --moss:#1f3a24;
+  --gray:#8b949e; --warn:#ffcc00;
+  --font:'Fira Code','JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0a0a}}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.55;
+  text-shadow:0 0 5px rgba(0,255,65,.45);min-height:100vh}
+a{color:var(--fg)}
+::selection{background:var(--fg);color:#000;text-shadow:none}
+
+/* ===== CRT: scanlines + vinheta ===== */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:999;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.28) 3px),
+  radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.55) 100%);
+  animation:flick 4s infinite}
+@keyframes flick{0%,100%{opacity:.95}50%{opacity:1}92%{opacity:.85}}
+
+/* ===== Boot ===== */
+#boot{position:fixed;inset:0;background:#000;z-index:500;padding:16px;overflow:hidden;font-family:'VT323',var(--font);font-size:20px}
+#boot pre{margin:0;white-space:pre-wrap}
+#skip{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));background:none;border:1px solid var(--dim);
+  color:var(--fg);font:inherit;padding:6px 10px;cursor:pointer}
+
+/* ===== Janela ===== */
+.win{max-width:960px;margin:16px auto;border:1px solid var(--dim);background:var(--panel);box-shadow:0 0 30px rgba(0,255,65,.12)}
+.bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--moss);border-bottom:1px solid var(--dim);color:var(--gray);font-size:13px}
+.bar .t{flex:1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot{width:12px;height:12px;border-radius:50%;border:0;padding:0;cursor:pointer}
+.d1{background:#ff5f56}.d2{background:#ffbd2e}.d3{background:#27c93f}
+main{padding:16px 20px 28px}
+.win.min main{display:none}.win.max{max-width:none;margin:0;min-height:100vh}
+
+/* ===== Banner ASCII ===== */
+#ascii{margin:6px 0 2px;font-size:clamp(5px,2.35vw,13px);line-height:1.05;white-space:pre;overflow:hidden}
+.sub{color:var(--gray);margin:0 0 12px}
+nav{display:flex;flex-wrap:wrap;gap:8px 12px;margin:12px 0 8px}
+
+/* ===== Botões / links com inversão ===== */
+.btn,nav a{display:inline-block;font:inherit;color:var(--fg);background:none;border:0;padding:2px 4px;cursor:pointer;text-decoration:none;transition:none}
+.btn:hover,nav a:hover,.btn:focus-visible,nav a:focus-visible,.card a:hover,.lnk:hover{background:var(--fg);color:#000;text-shadow:none;outline:none}
+.btn:hover::before,nav a:hover::before{content:"> "}
+
+/* ===== Seções ===== */
+section{margin-top:30px}
+.cmd{color:var(--gray);margin:0 0 8px}.cmd b{color:var(--fg);font-weight:600}
+.prompt-u{color:var(--fg)}
+h2{font-size:15px;margin:0}
+.cur::after{content:"█";animation:bl 1s steps(1) infinite;margin-left:2px}
+@keyframes bl{50%{opacity:0}}
+.out{border-left:2px solid var(--moss);padding-left:14px}
+.ghbtn{display:inline-block;margin-top:8px;border:1px solid var(--fg);padding:4px 10px;text-decoration:none}
+.ghbtn:hover{background:var(--fg);color:#000;text-shadow:none}
+
+/* ===== Cards ===== */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:10px}
+.card{border:1px solid var(--dim);padding:12px;background:rgba(0,255,65,.03);display:flex;flex-direction:column;gap:6px}
+.card:hover{border-color:var(--fg)}
+.card .perm{color:var(--gray);font-size:12px}
+.card h3{margin:0;font-size:15px;word-break:break-word}
+.card p{margin:0;color:#b6e8c1;font-size:13px;text-shadow:none}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{border:1px solid var(--dim);color:var(--dim);font-size:11px;padding:0 6px;text-shadow:none}
+.card.main{border-color:var(--fg);grid-column:1/-1}
+.card.ph{border-style:dashed;opacity:.75}
+.card a{align-self:flex-start;padding:2px 4px}
+
+/* ===== Skills ===== */
+.skill{display:grid;grid-template-columns:130px 1fr 44px;gap:8px;align-items:center;margin:4px 0;font-size:13px}
+.meter{height:10px;border:1px solid var(--dim)}.meter i{display:block;height:100%;background:var(--fg);width:0;transition:width 1.2s}
+
+/* ===== Contato ===== */
+.sh{background:#05080a;border:1px solid var(--moss);padding:12px;font-size:13px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0}
+.row .k{color:var(--gray);min-width:90px}
+.lnk{padding:0 2px;word-break:break-all}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:#000;
+  padding:8px 14px;z-index:600;opacity:0;pointer-events:none;transition:opacity .2s;text-shadow:none;max-width:90vw}
+#toast.on{opacity:1}
+
+/* ===== Terminal interativo ===== */
+#term{margin-top:34px;border-top:1px dashed var(--dim);padding-top:12px}
+#log div{white-space:pre-wrap;word-break:break-word;margin:2px 0}
+#log .e{color:var(--gray)}
+.line{display:flex;gap:6px;align-items:center}
+.ps{white-space:nowrap}
+#in{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--fg);font:inherit;text-shadow:inherit;caret-color:var(--fg)}
+footer{color:var(--gray);font-size:12px;margin-top:22px;text-align:center}
+
+@media (max-width:560px){
+  body{font-size:14px}main{padding:12px}
+  .skill{grid-template-columns:90px 1fr 38px}.ps{font-size:12px}
+  .win{margin:0;border-left:0;border-right:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ===== Tela de boot (clique, tecla ou botão para pular) ===== -->
+<div id="boot"><pre id="bootlog"></pre><button id="skip">[ pular ► ]</button></div>
+
+<div class="win" id="win">
+  <div class="bar">
+    <button class="dot d1" id="bClose" aria-label="Fechar" title="Fechar"></button>
+    <button class="dot d2" id="bMin" aria-label="Minimizar" title="Minimizar"></button>
+    <button class="dot d3" id="bMax" aria-label="Maximizar" title="Maximizar"></button>
+    <span class="t">guest@max1337xyz: ~</span>
+  </div>
+
+  <main id="top">
+    <!-- ===== Header / banner ===== -->
+    <pre id="ascii" aria-label="max1337xyz"></pre>
+    <p class="sub" id="tagline"></p>
+    <nav aria-label="Navegação">
+      <a href="#sobre">[ ./sobre ]</a>
+      <a href="#projetos">[ ./projetos ]</a>
+      <a href="#skills">[ ./skills ]</a>
+      <a href="#contato">[ ./contato ]</a>
+    </nav>
+
+    <!-- ===== Sobre ===== -->
+    <section id="sobre">
+      <p class="cmd"><span class="prompt-u">guest@max1337xyz:~$</span> <b>cat about.txt</b></p>
+      <div class="out">
+        <h2 class="tw cur" data-t="# Olá, eu sou o max1337xyz"></h2>
+        <p>Desenvolvedor com foco em <b>desenvolvimento</b>, <b>cibersegurança</b>, <b>Linux</b>, <b>automação</b> e <b>análise de dados</b>. Gosto de construir ferramentas, automatizar o que é repetitivo e entender como os sistemas funcionam por dentro.</p>
+        <a class="ghbtn" href="https://github.com/max1337xyz" target="_blank" rel="noopener noreferrer">[ github.com/max1337xyz ↗ ]</a>
+      </div>
+    </section>
+
+    <!-- ===== Projetos ===== -->
+    <section id="projetos">
+      <p class="cmd"><span class="prompt-u">guest@max1337xyz:~$</span> <b>ls -la ./projetos</b></p>
+      <div class="grid">
+        <!-- Projeto principal -->
+        <article class="card main">
+          <span class="perm">drwxr-xr-x  max1337xyz  ★ destaque</span>
+          <h3>📁 Phishing-Script-Kali-Linux</h3>
+          <p>Ferramenta/script desenvolvido para ambiente Kali Linux voltado a testes de engenharia social, análise de vulnerabilidades e estudos de cibersegurança.</p>
+          <div class="tags"><span class="tag">Kali Linux</span><span class="tag">Cibersegurança</span><span class="tag">Engenharia Social</span></div>
+          <a href="https://github.com/max1337xyz/Phishing-Script-Kali-Linux" target="_blank" rel="noopener noreferrer">[ ver repositório ↗ ]</a>
+        </article>
+
+        <!-- PLACEHOLDER 1: edite título, descrição, tags e link -->
+        <article class="card ph">
+          <span class="perm">drwxr-xr-x  max1337xyz</span>
+          <h3>📁 automacao-python</h3>
+          <p>Scripts de automação em Python. (Edite esta descrição.)</p>
+          <div class="tags"><span class="tag">Python</span><span class="tag">Automação</span></div>
+          <a href="https://github.com/max1337xyz" target="_blank" rel="noopener noreferrer">[ ver repositório ↗ ]</a>
+        </article>
+
+        <!-- PLACEHOLDER 2 -->
+        <article class="card ph">
+          <span class="perm">drwxr-xr-x  max1337xyz</span>
+          <h3>📁 geoprocessamento</h3>
+          <p>Ferramentas de geoprocessamento e análise de dados. (Edite esta descrição.)</p>
+          <div class="tags"><span class="tag">Python</span><span class="tag">GeoPandas</span><span class="tag">Dados</span></div>
+          <a href="https://github.com/max1337xyz" target="_blank" rel="noopener noreferrer">[ ver repositório ↗ ]</a>
+        </article>
+
+        <!-- PLACEHOLDER 3 -->
+        <article class="card ph">
+          <span class="perm">-rw-r--r--  max1337xyz</span>
+          <h3>📄 novo-projeto.sh</h3>
+          <p>Espaço reservado para o próximo projeto.</p>
+          <div class="tags"><span class="tag">Bash</span><span class="tag">Linux</span></div>
+          <a href="https://github.com/max1337xyz" target="_blank" rel="noopener noreferrer">[ ver repositório ↗ ]</a>
+        </article>
+      </div>
+      <p><a class="ghbtn" href="https://github.com/max1337xyz" target="_blank" rel="noopener noreferrer">[ Ver todos os repositórios no GitHub ]</a></p>
+    </section>
+
+    <!-- ===== Skills ===== -->
+    <section id="skills">
+      <p class="cmd"><span class="prompt-u">guest@max1337xyz:~$</span> <b>./skills.sh --list</b></p>
+      <div id="skillbox"></div>
+    </section>
+
+    <!-- ===== Contato ===== -->
+    <section id="contato">
+      <p class="cmd"><span class="prompt-u">guest@max1337xyz:~$</span> <b>./contact.sh</b></p>
+      <div class="sh">
+        <div>[<span>ok</span>] carregando canais de contato...</div>
+        <div class="row"><span class="k">GitHub</span><a class="lnk" href="https://github.com/max1337xyz" target="_blank" rel="noopener noreferrer">https://github.com/max1337xyz</a></div>
+        <div class="row"><span class="k">E-mail</span><a class="lnk" href="mailto:dlcninnja12@gmail.com">dlcninnja12@gmail.com</a>
+          <button class="btn" data-copy="dlcninnja12@gmail.com">[ Copiar E-mail ]</button></div>
+        <div class="row"><span class="k">WhatsApp</span><a class="lnk" href="https://wa.me/5585920020969" target="_blank" rel="noopener noreferrer">(85) 92002-0969</a>
+          <button class="btn" data-copy="(85) 92002-0969">[ Copiar número ]</button></div>
+      </div>
+    </section>
+
+    <!-- ===== Terminal interativo ===== -->
+    <section id="term">
+      <div id="log"><div class="e">Digite <b>help</b> para ver os comandos disponíveis.</div></div>
+      <label class="line"><span class="ps">guest@max1337xyz:~$</span>
+        <input id="in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal"></label>
+    </section>
+
+    <footer>© <span id="yr"></span> max1337xyz — feito com HTML, CSS e JS puro</footer>
+  </main>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+/* ===== Utilidades ===== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+$('#yr').textContent=new Date().getFullYear();
+
+/* ===== Banner ASCII gerado por fonte de pixels 5x5 (escala bem no mobile) ===== */
+const F={m:["10001","11011","10101","10001","10001"],a:["01110","10001","11111","10001","10001"],
+x:["10001","01010","00100","01010","10001"],1:["00100","01100","00100","00100","01110"],
+3:["11110","00001","01110","00001","11110"],7:["11111","00001","00010","00100","00100"],
+y:["10001","01010","00100","00100","00100"],z:["11111","00010","00100","01000","11111"]};
+$('#ascii').textContent=[0,1,2,3,4].map(r=>[..."max1337xyz"].map(c=>F[c][r].replace(/1/g,'█').replace(/0/g,' ')).join(' ')).join('\n');
+
+/* ===== Typewriter ===== */
+async function type(el,text,speed=22){
+  el.textContent='';
+  for(const ch of text){el.textContent+=ch;await sleep(speed)}
+}
+async function intro(){
+  await type($('#tagline'),'// dev · cibersegurança · linux · automação · dados',18);
+  // títulos .tw digitam quando entram na tela
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting&&!e.target.done){e.target.done=1;type(e.target,e.target.dataset.t,28)}}),{threshold:.4});
+  $$('.tw').forEach(el=>io.observe(el));
+  // skills animadas
+  const so=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){$$('.meter i').forEach(i=>i.style.width=i.dataset.w+'%');so.disconnect()}}),{threshold:.3});
+  so.observe($('#skills'));
+}
+
+/* ===== Skills (edite à vontade) ===== */
+const SKILLS=[['Python',90],['Linux / Bash',85],['Cibersegurança',75],['Automação',85],['Análise de dados',75],['HTML/CSS/JS',70]];
+$('#skillbox').innerHTML=SKILLS.map(([n,v])=>`<div class="skill"><span>${n}</span><div class="meter"><i data-w="${v}"></i></div><span>${v}%</span></div>`).join('');
+
+/* ===== Boot ===== */
+const BOOT=["BIOS v1.337 — max1337xyz systems","Memory test: 65536K OK","Detecting drives... /dev/sda1 [OK]",
+"[  OK  ] Started Kernel Log Daemon","[  OK  ] Mounted /home/max1337xyz","[  OK  ] Reached target Network","[  OK  ] Started SSH Daemon",
+"Loading portfolio.service ...","Welcome, guest. Starting shell..."];
+let booted=false;
+function endBoot(){if(booted)return;booted=true;$('#boot').remove();intro()}
+async function boot(){
+  const pre=$('#bootlog');
+  for(const l of BOOT){if(booted)return;pre.textContent+=l+'\n';await sleep(170)}
+  await sleep(300);endBoot();
+}
+$('#skip').onclick=endBoot;
+$('#boot').addEventListener('click',endBoot);
+addEventListener('keydown',()=>{if(!booted)endBoot()},{once:false});
+boot();
+
+/* ===== Copiar + toast ===== */
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2200)}
+async function copy(txt){
+  try{await navigator.clipboard.writeText(txt)}
+  catch(e){const a=document.createElement('textarea');a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}
+  toast('Copiado para a área de transferência!');
+}
+$$('[data-copy]').forEach(b=>b.onclick=()=>copy(b.dataset.copy));
+
+/* ===== Botões da janela ===== */
+const win=$('#win');
+$('#bMin').onclick=()=>win.classList.toggle('min');
+$('#bMax').onclick=()=>win.classList.toggle('max');
+$('#bClose').onclick=()=>toast('permission denied: você não pode fechar o terminal :)');
+
+/* ===== Terminal interativo ===== */
+const log=$('#log'), inp=$('#in'), hist=[]; let hi=0;
+const out=(t,c='')=>{const d=document.createElement('div');d.className=c;d.textContent=t;log.appendChild(d);d.scrollIntoView({block:'nearest'})};
+const go=id=>{document.getElementById(id).scrollIntoView({behavior:'smooth'})};
+const CMDS={
+  help:()=>out("Comandos: help, about, projects, skills, contact, github, whoami, date, ls, clear, sudo"),
+  about:()=>{out("max1337xyz — dev focado em cibersegurança, Linux, automação e análise de dados.");go('sobre')},
+  projects:()=>{out("drwxr-xr-x Phishing-Script-Kali-Linux\ndrwxr-xr-x automacao-python\ndrwxr-xr-x geoprocessamento");go('projetos')},
+  skills:()=>{out(SKILLS.map(s=>s[0]+': '+s[1]+'%').join('\n'));go('skills')},
+  contact:()=>{out("github: github.com/max1337xyz\nemail: dlcninnja12@gmail.com\nwhatsapp: (85) 92002-0969");go('contato')},
+  github:()=>{out("abrindo github.com/max1337xyz ...");window.open('https://github.com/max1337xyz','_blank','noopener')},
+  whoami:()=>out("guest — visitante curioso. Dono do site: max1337xyz"),
+  date:()=>out(new Date().toString()),
+  ls:()=>out("sobre.txt  projetos/  skills.sh  contact.sh"),
+  clear:()=>{log.innerHTML=''},
+  sudo:()=>out("guest não está no arquivo sudoers. Este incidente será reportado. ;)","e")
+};
+inp.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const raw=inp.value.trim();inp.value='';if(!raw)return;
+    hist.push(raw);hi=hist.length;
+    const d=document.createElement('div');d.textContent='guest@max1337xyz:~$ '+raw;log.appendChild(d);
+    const c=raw.split(/\s+/)[0].toLowerCase().replace(/^\.\//,'');
+    (CMDS[c]||(()=>out(c+': comando não encontrado. Digite help.','e')))();
+  }else if(e.key==='ArrowUp'&&hist.length){hi=Math.max(0,hi-1);inp.value=hist[hi];e.preventDefault()}
+  else if(e.key==='ArrowDown'&&hist.length){hi=Math.min(hist.length,hi+1);inp.value=hist[hi]||'';e.preventDefault()}
+});
+/* clicar na janela foca o prompt (sem atrapalhar links/botões) */
+$('#term').addEventListener('click',()=>inp.focus());
+</script>
+</body>
+</html>
